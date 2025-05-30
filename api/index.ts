@@ -67,26 +67,6 @@ app.post("/webhook", async (req: Request, res: Response) => {
     const reply = aiRes.data.reply || `${greeting} Sorry, I couldn't process your request.`;
     const detectedIntent = aiRes.data.intent || "unknown";
 
-    /*
-    // Alternative: Use Groq API (uncomment to use)
-    const aiRes = await axios.post(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        model: "llama3-70b-8192",
-        messages: [{ role: "user", content: `${greeting} ${text}` }],
-        max_tokens: 150,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-        },
-      }
-    );
-    const reply = aiRes.data.choices[0].message.content || `${greeting} Sorry, I couldn't process your request.`;
-    const detectedIntent = "unknown"; // Groq doesn't provide intent detection
-    */
-
     // Send reply via WhatsApp
     await axios.post(
       `https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`,
