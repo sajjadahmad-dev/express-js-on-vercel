@@ -24,16 +24,17 @@ app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
+  console.log("Webhook verification attempt:", { mode, token, challenge, expectedToken: VERIFY_TOKEN });
 
   if (mode && token) {
     if (mode === "subscribe" && token === VERIFY_TOKEN) {
       console.log("Webhook Verified!");
       res.status(200).send(challenge);
     } else {
-      res.sendStatus(403); // Forbidden
+      res.sendStatus(403); // Forbidden due to mode or token mismatch
     }
   } else {
-    res.sendStatus(400);
+    res.sendStatus(403); // Forbidden due to missing parameters
   }
 });
 
