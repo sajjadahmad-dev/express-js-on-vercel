@@ -1,4 +1,4 @@
-﻿import express, { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 
@@ -25,21 +25,25 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
 
 app.use(bodyParser.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Asim Al-Zill bot is live");
+app.get("/webhook", (req: Request, res: Response) => {
+  const verify_token = "asim-zill-12345";
+
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode && token) {
+    if (mode === 'subscribe' && token === verify_token) {
+      console.log('WEBHOOK_VERIFIED');
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403);
+    }
+  }
 });
 
-app.get("/webhook", (req: Request, res: Response) => {
-  const mode = req.query["hub.mode"] as string;
-  const token = req.query["hub.verify_token"] as string;
-  const challenge = req.query["hub.challenge"] as string;
-
-  if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
-    console.log("Webhook verified");
-    res.status(200).send(challenge);
-  } else {
-    res.status(403).send("Forbidden");
-  }
+app.get("/", (req: Request, res: Response) => {
+  res.send("Asim Al-Zill bot is live");
 });
 
 app.post("/webhook", async (req: Request, res: Response) => {
