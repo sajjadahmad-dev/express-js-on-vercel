@@ -27,6 +27,7 @@ app.get("/webhook", (req: Request, res: Response) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
+  console.log("Webhook verification attempt:", { mode, token, challenge, expectedToken: WEBHOOK_VERIFY_TOKEN });
 
   if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
     res.status(200).send(challenge);
@@ -34,7 +35,6 @@ app.get("/webhook", (req: Request, res: Response) => {
     res.sendStatus(403);
   }
 });
-
 // Webhook handler for incoming messages
 app.post("/webhook", async (req: Request, res: Response) => {
   try {
