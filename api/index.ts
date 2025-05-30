@@ -18,7 +18,7 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
 }
 
 // Root endpoint
-aapp.get("/webhook", (req: Request, res: Response) => {
+app.get("/webhook", (req: Request, res: Response) => {
   console.log("WEBHOOK VERIFICATION ATTEMPT", {
     mode: req.query["hub.mode"],
     receivedToken: req.query["hub.verify_token"],
