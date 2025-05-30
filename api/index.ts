@@ -18,7 +18,12 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
 }
 
 // Root endpoint
-app.get("/webhook", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
+  res.send("Asim Al-Zill bot is live");
+});
+
+// Webhook verification for Meta
+app.get("/webhook", (req: Request, res: Response) => {
   const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN;
 
   const mode = req.query["hub.mode"];
