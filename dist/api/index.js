@@ -15,12 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const axios_1 = __importDefault(require("axios"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const dotenv_1 = require("dotenv");
-console.log("Loading .env file...");
-const result = (0, dotenv_1.config)();
-if (result.error) {
-    throw result.error;
-}
+console.log("Checking environment variables...");
 console.log("ENV CHECK:", {
     PHONE_NUMBER_ID: process.env.PHONE_NUMBER_ID,
     WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN,
@@ -81,7 +76,7 @@ app.post("/webhook", (req, res) => __awaiter(void 0, void 0, void 0, function* (
             }, {
                 headers: { "Content-Type": "application/json" },
             });
-            const reply = aiRes.data.reply || `${greeting} Sorry, I couldn"t process your request.`;
+            const reply = aiRes.data.reply || `${greeting} Sorry, I couldn't process your request.`;
             const detectedIntent = aiRes.data.intent || "unknown";
             console.log(`Detected intent: ${detectedIntent}, Language: ${language}, Reply: ${reply}`);
             yield axios_1.default.post(`https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`, {

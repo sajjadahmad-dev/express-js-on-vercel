@@ -1,13 +1,8 @@
 ﻿import express, { Request, Response } from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
-import { config } from "dotenv";
 
-console.log("Loading .env file...");
-const result = config();
-if (result.error) {
-  throw result.error;
-}
+console.log("Checking environment variables...");
 console.log("ENV CHECK:", {
   PHONE_NUMBER_ID: process.env.PHONE_NUMBER_ID,
   WHATSAPP_TOKEN: process.env.WHATSAPP_TOKEN,
@@ -74,7 +69,7 @@ app.post("/webhook", async (req: Request, res: Response) => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const reply = aiRes.data.reply || `${greeting} Sorry, I couldn"t process your request.`;
+      const reply = aiRes.data.reply || `${greeting} Sorry, I couldn't process your request.`;
       const detectedIntent = aiRes.data.intent || "unknown";
 
       console.log(`Detected intent: ${detectedIntent}, Language: ${language}, Reply: ${reply}`);
