@@ -18,21 +18,22 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
 }
 
 // Root endpoint
-app.get("/", (req: Request, res: Response) => {
-  res.send("Asim Al-Zill bot is live");
-});
+aapp.get("/webhook", (req: Request, res: Response) => {
+  console.log("WEBHOOK VERIFICATION ATTEMPT", {
+    mode: req.query["hub.mode"],
+    receivedToken: req.query["hub.verify_token"],
+    expectedToken: WEBHOOK_VERIFY_TOKEN,
+    challenge: req.query["hub.challenge"]
+  });
 
-// Webhook verification for Meta
-app.get("/webhook", (req: Request, res: Response) => {
-  const mode = req.query["hub.mode"];
-  const token = req.query["hub.verify_token"];
-  const challenge = req.query["hub.challenge"];
-
-  if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
-    res.status(200).send(challenge);
-  } else {
-    res.sendStatus(403);
+  if (req.query["hub.mode"] === "subscribe" && 
+      req.query["hub.verify_token"] === WEBHOOK_VERIFY_TOKEN) {
+    console.log("VERIFICATION SUCCESS");
+    return res.status(200).send(req.query["hub.challenge"]);
   }
+
+  console.log("VERIFICATION FAILED - Token Mismatch or Invalid Mode");
+  return res.sendStatus(403);
 });
 // Webhook handler for incoming messages
 app.post("/webhook", async (req: Request, res: Response) => {
