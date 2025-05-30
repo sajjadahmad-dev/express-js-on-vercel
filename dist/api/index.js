@@ -28,6 +28,10 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
     throw new Error("Missing required environment variables: PHONE_NUMBER_ID, WHATSAPP_TOKEN, and WEBHOOK_VERIFY_TOKEN must be set.");
 }
 // Root endpoint
+app.get("/", (req, res) => {
+    res.send("Asim Al-Zill bot is live");
+});
+// Webhook verification for Meta
 app.get("/webhook", (req, res) => {
     const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN;
     const mode = req.query["hub.mode"];
