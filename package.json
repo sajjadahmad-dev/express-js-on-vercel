@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "express-js-vercel-app",
   "version": "1.0.0",
   "main": "dist/api/index.js",
@@ -29,4 +30,22 @@
     "url": "https://github.com/sajjadahmad-dev/express-js-on-vercel-new/issues"
   },
   "homepage": "https://github.com/sajjadahmad-dev/express-js-on-vercel-new#readme"
+=======
+	"name": "express",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node api/index.ts"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"@vercel/postgres": "^0.7.2",
+		"dotenv": "^16.4.1",
+		"express": "^4.18.2"
+	}
+>>>>>>> 73a33be3e2034f13c84e6e468a826097254e663a
 }
