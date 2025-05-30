@@ -18,25 +18,25 @@ if (!PHONE_NUMBER_ID || !WHATSAPP_TOKEN || !WEBHOOK_VERIFY_TOKEN) {
 }
 
 // Root endpoint
-app.get("/webhook", (req: Request, res: Response) => {
-  // Enhanced debug logging
-  console.log("=== FULL WEBHOOK VERIFICATION REQUEST ===");
-  console.log("Query Parameters:", req.query);
-  console.log("Headers:", req.headers);
-  console.log("Received Token:", req.query["hub.verify_token"]);
-  console.log("Expected Token:", WEBHOOK_VERIFY_TOKEN);
-  console.log("Mode:", req.query["hub.mode"]);
-  console.log("Challenge:", req.query["hub.challenge"]);
+app.get("/webhook", (req, res) => {
+  const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN;
 
-  if (req.query["hub.mode"] === "subscribe" && 
-      req.query["hub.verify_token"] === WEBHOOK_VERIFY_TOKEN) {
-    console.log("✅ VERIFICATION SUCCESS");
-    return res.status(200).send(req.query["hub.challenge"]);
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode && token) {
+    if (mode === "subscribe" && token === VERIFY_TOKEN) {
+      console.log("Webhook Verified!");
+      res.status(200).send(challenge);
+    } else {
+      res.sendStatus(403); // Forbidden
+    }
+  } else {
+    res.sendStatus(400);
   }
-
-  console.log("❌ VERIFICATION FAILED");
-  return res.sendStatus(403);
 });
+
 // Webhook handler for incoming messages
 app.post("/webhook", async (req: Request, res: Response) => {
   try {
