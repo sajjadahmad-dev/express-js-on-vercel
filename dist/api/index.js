@@ -44,11 +44,11 @@ app.get("/webhook", (req, res) => {
             res.status(200).send(challenge);
         }
         else {
-            res.sendStatus(403); // Forbidden due to mode or token mismatch
+            res.sendStatus(403);
         }
     }
     else {
-        res.sendStatus(403); // Forbidden due to missing parameters
+        res.sendStatus(403);
     }
 });
 // Webhook handler for incoming messages
