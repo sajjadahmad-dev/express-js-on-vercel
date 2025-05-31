@@ -24,15 +24,17 @@ app.get("/", (req: Request, res: Response) => {
 
 // Webhook verification for Meta
 app.get("/webhook", (req: Request, res: Response) => {
-    const mode = req.query["hub.mode"];
-    const token = req.query["hub.verify_token"];
-    const challenge = req.query["hub.challenge"];
+    const mode = req.query["hub.mode"] as string;
+    const token = req.query["hub.verify_token"] as string;
+    const challenge = req.query["hub.challenge"] as string;
+
     console.log("Webhook verification attempt:", { mode, token, challenge, expectedToken: WEBHOOK_VERIFY_TOKEN });
 
-    if (mode && token === WEBHOOK_VERIFY_TOKEN) {
+    if (mode === "subscribe" && token === WEBHOOK_VERIFY_TOKEN) {
         console.log("Webhook Verified!");
         res.status(200).send(challenge);
     } else {
+        console.log("Webhook verification failed.");
         res.sendStatus(403);
     }
 });
@@ -42,6 +44,7 @@ app.post("/webhook", async (req: Request, res: Response) => {
     try {
         const message = req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
         if (!message?.from || !message?.text?.body) {
+            console.log("Invalid message received:", req.body);
             return res.status(400).send("Invalid message");
         }
 
@@ -51,10 +54,19 @@ app.post("/webhook", async (req: Request, res: Response) => {
         const greeting = hour < 12 ? "Good morning!" : hour < 18 ? "Good afternoon!" : "Good evening!";
         const language = /^[a-zA-Z\s]+$/.test(text) ? "en" : text.match(/merhaba/i) ? "tr" : "ar";
 
-        const aiRes = await axios.post(AI_API_URL, { message: text, greeting, language }, { headers: { "Content-Type": "application/json" } });
+        console.log("Processing message:", { senderPhone, text, language });
+
+        // Call AI API
+        const aiRes = await axios.post(AI_API_URL, { message: text, greeting, language }, {
+            headers: { "Content-Type": "application/json" },
+            timeout: 10000,
+        });
         const reply = aiRes.data.reply || `${greeting} Sorry, I couldn't process your request.`;
         const detectedIntent = aiRes.data.intent || "unknown";
 
+        console.log("AI response:", { reply, detectedIntent });
+
+        // Send reply via WhatsApp
         await axios.post(`https://graph.facebook.com/v19.0/${PHONE_NUMBER_ID}/messages`, {
             messaging_product: "whatsapp",
             to: senderPhone,
@@ -65,11 +77,14 @@ app.post("/webhook", async (req: Request, res: Response) => {
                 Authorization: `Bearer ${WHATSAPP_TOKEN}`,
                 "Content-Type": "application/json",
             },
+            timeout: 10000,
         });
 
+        console.log("Reply sent to WhatsApp:", { to: senderPhone, reply });
         res.status(200).send("Message processed");
-    } catch (error) {
-        res.status(500).send("Server error");
+    } catch (error: any) {
+        console.error("Error processing webhook:", error.message, error.response?.data || error);
+        res.status(500).send("Server error: " + error.message);
     }
 });
 
