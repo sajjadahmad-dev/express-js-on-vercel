@@ -25,7 +25,6 @@ app.get("/", (req: Request, res: Response) => {
 // Webhook verification for Meta
 app.get("/webhook", (req: Request, res: Response) => {
   const VERIFY_TOKEN = process.env.WEBHOOK_VERIFY_TOKEN;
-
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
@@ -36,10 +35,10 @@ app.get("/webhook", (req: Request, res: Response) => {
       console.log("Webhook Verified!");
       res.status(200).send(challenge);
     } else {
-      res.sendStatus(403); // Forbidden due to mode or token mismatch
+      res.sendStatus(403);
     }
   } else {
-    res.sendStatus(403); // Forbidden due to missing parameters
+    res.sendStatus(403);
   }
 });
 
